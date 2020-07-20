@@ -1,4 +1,4 @@
-This is Automation framework which will validate various user inputs provided as a seed value to the API
+Tests to validate various user inputs provided as a seed value to the API
 
 Steps to Execute Test Cases:
 
