@@ -1,6 +1,8 @@
+Tests to validate various user inputs provided as a seed value to the API
+
 Steps to Execute Test Cases:
 
-Install the requirements from the requirements.txt documents
+Install the requirements from the requirements.txt
 pip3 install -r requirements.txt
 
 To run the test case through pycharm
@@ -14,5 +16,6 @@ g. Select the Run option from the top.
 
 To run the command from command prompt.
 a. Navigate to the Checkout directory.
-b. Run below command.
+b. Run below command
 pytest -k validateStreamData --html=report.html
+
