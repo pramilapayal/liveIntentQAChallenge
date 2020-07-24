@@ -1,48 +1,22 @@
-import pytest
-import boto3
-import configparser
+import pytest ,boto3,configparser,logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s'\n'%(message)s")
 
 @pytest.fixture()
-def getAPIUrl():
-    apiHostForRoute = getConfiData().get('apiHost', 'apiHostForRoute')
-    url = "http://" + apiHostForRoute + "/route/"
-    print(url)
+def get_route_api_url():
+    api_host_for_route = get_config_data().get('route', 'api_host_for_route')
+    url = ''.join(["http://",api_host_for_route,"/route/"])
     return url
 
-@pytest.fixture()
-def getKinesisUrl():
-    kinesisEndPointUrl = getConfiData().get('kinesisHost', 'kinesisEndPoint')
-    kinesisEndPointUrl = "http://" + kinesisEndPointUrl
-    return kinesisEndPointUrl
+def get_kinesis_client():
+    kineses_endpoint_url = get_config_data().get('kinesis', 'kinesis_end_point')
+    aws_access_key_id = get_config_data().get('kinesis', 'aws_access_key_id')
+    aws_secret_key = get_config_data().get('kinesis', 'aws_secret_key_id')
+    kineses_endpoint_url = ''.join("http://" + kineses_endpoint_url)
+    kinesis_client_connection = boto3.client('kinesis', region_name='us-east-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_key, endpoint_url=kineses_endpoint_url)
+    return kinesis_client_connection
 
-def getOddShardIterator():
-    return getNextShardIterator('li-stream-odd')
-
-def getEvenShardIterator():
-    return getNextShardIterator('li-stream-even')
-
-
-def getConfiData():
-        # This is used to define the config parser
-        settings = configparser.RawConfigParser ()
-        # this is used to differentiate the config based in sections
-        settings._interpolation = configparser.ExtendedInterpolation ()
-        # This is used to call the config file
-        settings.read("../config/config.ini")
-        return settings
-
-
-def getNextShardIterator(streamName):
-    kinesisEndPointUrl = getConfiData ().get ('kinesisHost', 'kinesisEndPoint')
-    kinesisEndPointUrl = "http://" + kinesisEndPointUrl
-    kinesisClientConnection = boto3.client('kinesis', region_name='us-east-1', aws_access_key_id='liveintent', aws_secret_access_key='liveintent', endpoint_url=kinesisEndPointUrl)
-    # Decribe the stream details
-    getStreamDetails = kinesisClientConnection.describe_stream(StreamName=streamName)
-    # # Get the shard id
-    getShardIDOfStream = getStreamDetails['StreamDescription']['Shards'][0]['ShardId']
-    # # Get the shard iterator
-    getShardIteratorFromShardID = kinesisClientConnection.get_shard_iterator(StreamName=streamName,ShardId=getShardIDOfStream,ShardIteratorType='LATEST')
-    # print ("This is getNextShardIterator function value"+str(getShardIteratorFromShardID))
-    getShardIterator = getShardIteratorFromShardID['ShardIterator']
-    return getShardIterator
-
+def get_config_data():
+    settings = configparser.RawConfigParser()
+    settings._interpolation = configparser.ExtendedInterpolation()
+    settings.read("config/config.ini")
+    return settings
